@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlockWeb — Contratto Agente AI per Agenzie Immobiliari</title>
+<style>
+  :root{
+    --bg: #F2EFE7;
+    --paper: #FBFAF6;
+    --ink: #25252A;
+    --navy: #1B2230;
+    --navy-2: #232B3D;
+    --indigo: #5B4FCF;
+    --indigo-soft: #EFEBFC;
+    --green: #3F6B4A;
+    --green-soft: #EFF6EE;
+    --line: #D8D3C6;
+    --check: #4B3F9E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height:1.55;
+  }
+  .sheet{
+    max-width: 920px;
+    margin: 32px auto;
+    background:var(--paper);
+    padding: 48px 56px 64px;
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 18px rgba(0,0,0,0.06);
+  }
+  header.brand{
+    text-align:center;
+    border-bottom: 3px double var(--navy);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+  }
+  .brand .mark{ font-size: 1.9rem; letter-spacing: 0.18em; font-weight:700; color:var(--navy);}
+  .brand .mark .fleur{ color:var(--indigo); margin: 0 6px;}
+  .brand .sub{ letter-spacing: 0.22em; font-size:0.72rem; color:#6b6b66; margin-top:6px;}
+
+  .doctitle{
+    text-align:center;
+    font-size:1.5rem;
+    letter-spacing:0.06em;
+    margin: 18px 0 6px;
+    color: var(--navy);
+  }
+  .docmeta{
+    display:flex; justify-content:space-between;
+    font-size:0.85rem; color:#5a5a54;
+    border-bottom:1px solid var(--line);
+    padding-bottom:16px; margin-bottom:28px;
+  }
+
+  .bar{
+    background: var(--navy);
+    color:#fff;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    margin: 36px 0 16px;
+    font-weight:700;
+  }
+
+  p, li{ font-size:0.97rem; color:#33332e; }
+  ul.checklist{ list-style:none; padding-left:0; margin:14px 0;}
+  ul.checklist li{ padding-left: 28px; position:relative; margin-bottom:10px;}
+  ul.checklist li::before{
+    content:"✓"; position:absolute; left:0; top:0;
+    color: var(--check); font-weight:700;
+  }
+
+  .fields{ display:grid; grid-template-columns: 1fr 2fr; gap: 12px 18px; margin-top:18px;}
+  .fields label{ font-size:0.78rem; letter-spacing:0.06em; color:#6b6b66; text-transform:uppercase; align-self:end; padding-bottom:4px;}
+  .fields input.line{
+    border:none; border-bottom:1px solid var(--line); background:transparent;
+    font-family:inherit; font-size:0.95rem; color:var(--ink); padding:4px 2px;
+    width:100%; outline:none;
+  }
+  .fields input.line:focus{ border-bottom:1.5px solid var(--indigo); }
+  .fields input.line:disabled{ color:#54544e; background:#f5f3ee; }
+
+  .why-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:18px;
+  }
+  .why-card{
+    background: var(--navy-2); color:#fff; padding:16px 18px; border-radius:4px;
+  }
+  .why-card .icon{ font-size:1.1rem; margin-right:6px;}
+  .why-card .title{ color:#C9C2FF; font-weight:700; font-size:0.88rem; letter-spacing:0.03em; margin-bottom:6px;}
+  .why-card p{ color:#E4E2EC; font-size:0.86rem; margin:0;}
+
+  .plan-banner{
+    background: var(--navy); color:#fff; padding:18px 22px; text-align:center; margin: 30px 0 20px; border-radius:4px;
+  }
+  .plan-banner .t{ font-size:1.1rem; font-weight:700; letter-spacing:0.05em;}
+  .plan-banner .s{ font-size:0.85rem; color:#C9C2FF; margin-top:4px;}
+
+  .plans{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-bottom: 26px;}
+  .plan{
+    border: 1px solid var(--line); border-radius:6px; padding:18px 16px 22px;
+    text-align:center; position:relative; cursor:pointer; transition: all 0.15s ease;
+    background:#fff;
+  }
+  .plan.selected{ border:2px solid var(--indigo); box-shadow: 0 0 0 3px var(--indigo-soft);}
+  .plan .tag{ font-size:0.72rem; letter-spacing:0.08em; color:#9a948a; text-transform:uppercase;}
+  .plan .name{ font-size:1.25rem; font-weight:700; margin:8px 0 2px; color:var(--navy);}
+  .plan .price{ font-size:1.9rem; font-weight:700; color:var(--navy); margin-top:8px;}
+  .badge.discount{ background:#C0392B; }
+  .price-row{ display:flex; align-items:baseline; justify-content:center; gap:10px; margin-top:14px;}
+  .price-row .old{ font-size:1.35rem; color:#a39d8e; text-decoration:line-through; text-decoration-color:#C0392B; text-decoration-thickness:2px;}
+  .price-row .new{ font-size:2rem; font-weight:700; color:var(--navy);}
+  .price-unit{ font-size:0.82rem; color:#7a756b; margin-top:-2px;}
+  .savings-pill{
+    display:inline-block; margin-top:10px; background:#FCEAEA; color:#C0392B;
+    font-size:0.76rem; font-weight:700; padding:5px 14px; border-radius:12px; letter-spacing:0.02em;
+  }
+  .plan .price span{ font-size:0.95rem; font-weight:400; color:#7a756b;}
+  .badge{
+    position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+    background: var(--indigo); color:#fff; font-size:0.68rem; letter-spacing:0.07em;
+    padding:4px 12px; border-radius:12px; white-space:nowrap;
+  }
+  .checkbox{
+    width:18px; height:18px; border:1.5px solid #b9b3a4; border-radius:3px; margin: 0 auto 10px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .plan.selected .checkbox{ background:var(--indigo); border-color:var(--indigo); color:#fff; font-size:0.8rem;}
+
+  table.features{ width:100%; border-collapse:collapse; margin-bottom:24px; font-size:0.86rem;}
+  table.features th{ text-align:center; padding:10px 8px; font-size:0.82rem;}
+  table.features td{ padding:9px 8px; border-bottom:1px solid var(--line);}
+  table.features td:first-child{ width:46%;}
+  table.features td:not(:first-child), table.features th:not(:first-child){ text-align:center; width:18%;}
+  table.features tr.group td{
+    background: var(--navy-2); color:#C9C2FF; font-weight:700; font-size:0.74rem;
+    letter-spacing:0.07em; padding:8px 8px;
+  }
+  table.features thead th{ background:var(--navy); color:#fff;}
+  table.features thead th.mid{ background:var(--indigo);}
+  .yes{ color:var(--check); font-weight:700;}
+
+  .guarantee{
+    border:1.5px solid var(--green); background:var(--green-soft); border-radius:6px;
+    padding:18px 20px; margin: 22px 0;
+  }
+  .guarantee .t{ color:var(--green); font-weight:700; margin-bottom:6px; font-size:0.98rem;}
+  .guarantee p{ margin:4px 0; color:#2e4a36;}
+
+  .hint{ text-align:center; font-size:0.8rem; color:#9a948a; margin-bottom: 8px;}
+
+  .economic{
+    border:1.5px solid var(--green); border-radius:6px; padding:18px 20px; margin: 30px 0;
+    background: var(--paper);
+  }
+  .economic h4{ margin:0 0 10px; color:var(--navy); letter-spacing:0.05em; font-size:0.95rem;}
+  .economic .placeholder{ color:#a9a397; font-style:italic; font-size:0.88rem;}
+  .economic .row{ display:flex; justify-content:space-between; font-size:0.92rem; margin:4px 0;}
+  .economic .row.total{ font-weight:700; border-top:1px solid var(--line); padding-top:8px; margin-top:8px;}
+
+  .sign{ display:grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top:34px;}
+  .sign h5{ letter-spacing:0.08em; font-size:0.82rem; color:var(--navy); margin-bottom:10px;}
+  .pad-wrap{ border:1px solid var(--line); border-radius:4px; background:#fff; position:relative;}
+  canvas.pad{ width:100%; height:120px; display:block; cursor:crosshair; touch-action:none;}
+  .pad-ph{ position:absolute; top:50%; left:0; right:0; text-align:center; color:#bdb7a9; font-size:0.85rem; pointer-events:none;}
+  .sign-controls{ text-align:right; margin-top:6px;}
+  .sign-controls button{
+    font-family: inherit; font-size:0.78rem; padding:5px 12px; border:1px solid var(--line);
+    background:#fff; border-radius:4px; cursor:pointer; color:#6b6b66;
+  }
+  .sign-controls button:hover{ background:#f0eee7;}
+
+  footer.note{ text-align:center; font-size:0.74rem; color:#9a948a; margin-top:30px; line-height:1.7;}
+
+  .confirm-wrap{ text-align:center; margin-top:30px;}
+  .confirm-btn{
+    background:var(--indigo); color:#fff; border:none; padding:14px 34px;
+    font-family:inherit; font-size:0.95rem; letter-spacing:0.04em; border-radius:6px;
+    cursor:pointer; transition:background 0.15s ease;
+  }
+  .confirm-btn:hover{ background:#4a3fb8; }
+  .confirmed-banner{
+    display:inline-block; background:var(--green-soft); border:1.5px solid var(--green);
+    color:var(--green); padding:14px 30px; border-radius:6px; font-size:0.95rem; font-weight:700;
+  }
+  .sign-controls button:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  @media (max-width: 760px){
+    .sheet{ padding:28px 20px; }
+    .why-grid, .plans, .sign{ grid-template-columns: 1fr; }
+    .fields{ grid-template-columns: 1fr; }
+    table.features{ font-size:0.74rem;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="brand">
+    <div class="mark"><span class="fleur">⚜</span>BLOCKWEB<span class="fleur">⚜</span></div>
+    <div class="sub">INTELLIGENZA ARTIFICIALE PER AGENZIE IMMOBILIARI</div>
+  </header>
+
+  <div class="doctitle">CONTRATTO DI FORNITURA AGENTE AI</div>
+  <div class="docmeta">
+    <span>N° _______ / 2026</span>
+    <span id="todayDate">Data: 19 giugno 2026</span>
+  </div>
+
+  <div class="bar">1. OGGETTO DEL CONTRATTO</div>
+  <p>BlockWeb si impegna a configurare, addestrare e gestire un <strong>Agente di Intelligenza Artificiale personalizzato</strong> per l'agenzia immobiliare del Cliente, operativo 24 ore su 24, 7 giorni su 7, dedicato alla gestione dei contatti di chi cerca casa da comprare, da affittare o desidera vendere/valutare il proprio immobile, attraverso i canali previsti dal piano selezionato:</p>
+  <ul class="checklist">
+    <li>Sviluppo e configurazione dell'Agente AI su misura per gli annunci, le zone e le tipologie di immobili gestiti dall'agenzia</li>
+    <li>Addestramento dell'Agente sul listino immobili attivi, sui prezzi, sulle zone di competenza e sulle FAQ ricorrenti</li>
+    <li>Attivazione sui canali previsti dal piano (WhatsApp Business, chiamate vocali, Email, Chat sito)</li>
+    <li>Qualificazione automatica dei contatti in entrata (budget, zona, tipologia, tempistica) con distinzione tra acquisto, affitto e vendita/valutazione</li>
+    <li>Fissaggio automatico delle visite nel calendario dell'agente, con notifica immediata al titolare</li>
+    <li>Manutenzione continua, aggiornamenti e ottimizzazione dell'Agente per tutta la durata del rapporto</li>
+    <li>Reportistica periodica sull'attività dell'Agente (lead gestiti, visite fissate, conversioni)</li>
+    <li><em>Se previsto dal piano:</em> reattivazione automatica dei lead dormienti, integrazione con il gestionale/CRM, dashboard avanzata e account manager dedicato</li>
+  </ul>
+
+  <div class="bar">2. DATI CLIENTE</div>
+  <div class="fields">
+    <label>Ragione Sociale</label><input type="text" class="line" id="f_ragsoc">
+    <label>Partita IVA</label><input type="text" class="line" id="f_piva">
+    <label>N. Iscrizione REA</label><input type="text" class="line" id="f_rea">
+    <label>Sede Legale</label><input type="text" class="line" id="f_sede">
+    <label>Email</label><input type="email" class="line" id="f_email">
+    <label>Telefono</label><input type="tel" class="line" id="f_tel">
+    <label>Referente</label><input type="text" class="line" id="f_ref">
+  </div>
+
+  <div class="bar">3. PERCHÉ SCEGLIERE UN AGENTE AI PER LA TUA AGENZIA</div>
+  <div class="why-grid">
+    <div class="why-card"><div class="title">⏰ DISPONIBILE H24 — 365 GIORNI</div><p>Risponde alle 3 di notte, nei festivi, quando arriva la richiesta sul portale. Nessuna visita persa perché "l'agenzia era chiusa".</p></div>
+    <div class="why-card"><div class="title">📅 NON VA IN FERIE. MAI.</div><p>Niente malattie, ritardi o giorni liberi. Sempre al suo posto, anche ad agosto, quando i lead continuano ad arrivare.</p></div>
+    <div class="why-card"><div class="title">⚡ RISPONDE IN 3 SECONDI</div><p>Il 70% di chi cerca casa scrive a più agenzie insieme e si affida a chi risponde prima. L'agente AI batte qualsiasi concorrente che risponde a mano.</p></div>
+    <div class="why-card"><div class="title">🚫 ZERO ERRORI DI INFORMAZIONE</div><p>Non si dimentica il prezzo di un immobile, non sbaglia la metratura, non comunica una zona errata. Sempre preciso su ogni annuncio attivo.</p></div>
+    <div class="why-card"><div class="title">💰 COSTA MENO DI UN ADDETTO IN PIÙ</div><p>Nessun contratto, TFR, contributi o straordinari. Gestisce le richieste in entrata a una frazione del costo di una persona dedicata.</p></div>
+    <div class="why-card"><div class="title">🎯 PERSONALIZZATO PER LA TUA AGENZIA</div><p>Addestrato sui tuoi annunci, le tue zone e il tuo tono. Conosce i tuoi immobili meglio di un neoassunto al primo giorno.</p></div>
+    <div class="why-card"><div class="title">📈 CONVERTE MENTRE SEI IN VISITA</div><p>Qualifica chi scrive, propone l'appuntamento e raccoglie i dati in automatico, anche quando sei fuori ufficio con un cliente.</p></div>
+    <div class="why-card"><div class="title">🔒 OGNI LEAD TRACCIATO E RECUPERABILE</div><p>Ogni conversazione è salvata. Sai sempre quanti contatti sono arrivati, cosa cercavano, e quante visite sono diventate trattative.</p></div>
+  </div>
+
+  <div class="bar">4. AGENTE AI — SELEZIONA PIANO</div>
+  <div class="plan-banner">
+    <div class="t">🏠 AGENTE AI PER LA TUA AGENZIA IMMOBILIARE</div>
+    <div class="s">Risponde ai lead di chi compra, affitta o vende casa, 24/7, al posto tuo</div>
+  </div>
+
+  <div class="plans">
+    <div class="plan" data-plan="piccolo" data-month="297" onclick="selectPlan(this)">
+      <div class="checkbox"></div>
+      <div class="tag">AI Piccolo</div>
+      <div class="name">PICCOLO 🔑</div>
+      <div class="price">€297<span>/mese</span></div>
+    </div>
+    <div class="plan" data-plan="medio" data-month="499" onclick="selectPlan(this)">
+      <span class="badge">PIÙ SCELTO DALLE AGENZIE</span>
+      <div class="checkbox"></div>
+      <div class="tag">AI Medio</div>
+      <div class="name">MEDIO 🏘️</div>
+      <div class="price">€499<span>/mese</span></div>
+    </div>
+    <div class="plan" data-plan="grande" data-month="849" onclick="selectPlan(this)">
+      <span class="badge discount">−15% PREZZO DI LANCIO</span>
+      <div class="checkbox"></div>
+      <div class="tag">AI Grande</div>
+      <div class="name">GRANDE 🏢</div>
+      <div class="price-row"><span class="old">€1.000</span><span class="new">€849</span></div>
+      <div class="price-unit">/mese</div>
+      <div class="savings-pill">Risparmi €151/mese</div>
+    </div>
+  </div>
+
+  <table class="features">
+    <thead>
+      <tr><th style="text-align:left; background:transparent;"></th><th>PICCOLO</th><th class="mid">MEDIO</th><th>GRANDE</th></tr>
+    </thead>
+    <tbody>
+      <tr class="group"><td colspan="4">DISPONIBILITÀ &amp; RISPOSTA</td></tr>
+      <tr><td>Agente attivo 24/7 su tutti i lead immobiliari</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Risposta istantanea in meno di 3 secondi</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Addestramento su annunci, zone e prezzi reali</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Notifica immediata su WhatsApp per ogni contatto</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Operativo entro 7 giorni lavorativi</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+
+      <tr class="group"><td colspan="4">CANALI &amp; INTEGRAZIONE</td></tr>
+      <tr><td>Agente su WhatsApp Business</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Agente su chiamate vocali (risponde e richiama)</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Agente su Email (risposta automatica)</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Chat integrata nel sito dell'agenzia</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+      <tr><td>Gestione omnicanale — canali sincronizzati</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+
+      <tr class="group"><td colspan="4">QUALIFICAZIONE &amp; VENDITA</td></tr>
+      <tr><td>Qualifica budget, zona, tipologia, tempistica</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Distingue automaticamente compra / affitta / vendi</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Fissa la visita nel calendario dell'agente</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Follow-up automatico per chi non risponde</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Reattivazione lead dormienti (vecchi contatti)</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+
+      <tr class="group"><td colspan="4">ANALISI &amp; CONTROLLO</td></tr>
+      <tr><td>Statistiche settimanali su contatti ricevuti</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Report mensile — quante richieste, quante visite</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Dashboard avanzata in tempo reale</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+      <tr><td>Personalizzazione tono e linguaggio dell'agente</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+
+      <tr class="group"><td colspan="4">SUPPORTO &amp; AGGIORNAMENTI</td></tr>
+      <tr><td>Aggiornamenti dell'agente inclusi</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Volume lead gestiti al mese</td><td>fino a 100</td><td>fino a 300</td><td>illimitato</td></tr>
+      <tr><td>Supporto prioritario WhatsApp entro 2 ore</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Multi-sede / multi-agente</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+      <tr><td>Account manager dedicato</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+    </tbody>
+  </table>
+
+  <div class="guarantee">
+    <div class="t">🛡 Garanzia Soddisfatti o Rimborsati — 30 Giorni</div>
+    <p>Se entro 30 giorni dall'attivazione il Cliente non è soddisfatto per qualsiasi motivo, BlockWeb rimborserà il 100% di quanto versato, senza domande e senza penali. Zero rischi.</p>
+    <p><strong>Nessun vincolo di durata minima:</strong> il Cliente può disdire in qualsiasi momento con un preavviso di 30 giorni, senza penali.</p>
+  </div>
+
+  <div class="hint">Tocca un piano per selezionarlo. Tocca di nuovo per deselezionarlo.</div>
+
+  <div class="bar">5. TERMINI DI PAGAMENTO</div>
+  <p>Il primo canone mensile è dovuto al momento della firma del presente contratto come condizione per l'attivazione del servizio. I canoni successivi saranno addebitati con cadenza mensile, lo stesso giorno del mese di attivazione.</p>
+  <p>Il presente contratto <strong>non prevede alcun vincolo di durata minima</strong>: il Cliente può disdire in qualsiasi momento con un preavviso scritto di 30 giorni, senza penali. Tutti i prezzi si intendono IVA esclusa.</p>
+  <p>In caso di mancato pagamento entro 15 giorni dalla scadenza, BlockWeb si riserva il diritto di sospendere i servizi, previa comunicazione al Cliente, fino alla regolarizzazione.</p>
+
+  <div class="bar">6. OBBLIGHI DI BLOCKWEB</div>
+  <p>BlockWeb si impegna a rendere l'Agente AI operativo entro <strong>7 giorni lavorativi dalla firma</strong>, a condizione che il Cliente abbia fornito i materiali necessari all'addestramento (elenco immobili attivi, listino prezzi, zone di competenza, FAQ e tono comunicativo desiderato). BlockWeb garantisce la disponibilità continua dell'Agente, la manutenzione tecnica e gli aggiornamenti per tutta la durata del rapporto contrattuale.</p>
+
+  <div class="bar">7. LICENZA D'USO DELL'AGENTE AI</div>
+  <p>L'Agente AI sviluppato da BlockWeb è concesso al Cliente in licenza d'uso per tutta la durata del rapporto contrattuale. La tecnologia, i modelli e le configurazioni sottostanti rimangono di proprietà intellettuale di BlockWeb. In caso di cessazione del rapporto, previo saldo di quanto dovuto, il Cliente potrà richiedere l'esportazione dei dati raccolti (contatti, conversazioni, statistiche) a proprio favore.</p>
+
+  <div class="economic">
+    <h4>RIEPILOGO ECONOMICO</h4>
+    <div id="econBody"><span class="placeholder">Seleziona almeno un piano ↑</span></div>
+  </div>
+
+  <div class="sign">
+    <div>
+      <h5>BLOCKWEB — FIRMA</h5>
+      <div class="pad-wrap">
+        <canvas class="pad" id="pad1"></canvas>
+        <div class="pad-ph" id="ph1">✍ Firma qui</div>
+      </div>
+      <div class="sign-controls"><button onclick="clearPad(1)">Cancella</button></div>
+    </div>
+    <div>
+      <h5>IL CLIENTE — FIRMA</h5>
+      <div class="pad-wrap">
+        <canvas class="pad" id="pad2"></canvas>
+        <div class="pad-ph" id="ph2">✍ Firma qui con il dito o il mouse</div>
+      </div>
+      <div class="sign-controls"><button onclick="clearPad(2)">Cancella e rifai</button></div>
+    </div>
+  </div>
+
+  <div class="confirm-wrap" id="confirmWrap">
+    <button class="confirm-btn" id="confirmBtn" onclick="confirmContract()">✓ Conferma e firma il contratto</button>
+  </div>
+
+  <footer class="note">
+    Firmando, il Cliente dichiara di aver letto e accettato tutti i termini del presente contratto, inclusi quelli relativi ai termini di pagamento (Art. 5) e alla licenza d'uso dell'Agente AI (Art. 7).
+  </footer>
+
+</div>
+
+<script>
+document.getElementById('todayDate').textContent = 'Data: ' +
+  new Date().toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'});
+
+let selected = null;
+let padsLocked = false;
+function selectPlan(el){
+  if(selected === el){
+    el.classList.remove('selected');
+    selected = null;
+  } else {
+    document.querySelectorAll('.plan').forEach(p=>p.classList.remove('selected'));
+    el.classList.add('selected');
+    selected = el;
+  }
+  renderSummary();
+}
+function renderSummary(){
+  const body = document.getElementById('econBody');
+  if(!selected){
+    body.innerHTML = '<span class="placeholder">Seleziona almeno un piano ↑</span>';
+    return;
+  }
+  const name = selected.querySelector('.name').textContent.trim();
+  const month = selected.dataset.month;
+  body.innerHTML = `
+    <div class="row"><span>Piano selezionato</span><span>${name}</span></div>
+    <div class="row total"><span>Canone mensile</span><span>€${month}/mese</span></div>
+  `;
+}
+
+// Signature pads
+function setupPad(id, phId){
+  const canvas = document.getElementById(id);
+  const ph = document.getElementById(phId);
+  function resize(){
+    const ratio = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * ratio;
+    canvas.height = 120 * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+  }
+  resize();
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#25252A';
+  ctx.lineWidth = 1.8;
+  ctx.lineCap = 'round';
+  let drawing = false;
+  function pos(e){
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return [cx, cy];
+  }
+  function start(e){ if(padsLocked) return; drawing = true; ph.style.display='none'; const [x,y]=pos(e); ctx.beginPath(); ctx.moveTo(x,y); e.preventDefault();}
+  function move(e){ if(!drawing) return; const [x,y]=pos(e); ctx.lineTo(x,y); ctx.stroke(); e.preventDefault();}
+  function end(){ drawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseleave', end);
+  canvas.addEventListener('touchstart', start);
+  canvas.addEventListener('touchmove', move);
+  canvas.addEventListener('touchend', end);
+  canvas._ctx = ctx; canvas._ph = ph;
+}
+function clearPad(n){
+  const canvas = document.getElementById('pad'+n);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width, canvas.height);
+  canvas._ph.style.display = 'block';
+}
+setupPad('pad1','ph1');
+setupPad('pad2','ph2');
+
+function confirmContract(){
+  if(!selected){
+    alert('Seleziona un piano prima di confermare.');
+    return;
+  }
+  document.querySelectorAll('.plan').forEach(p => { p.onclick = null; });
+  document.querySelectorAll('.fields input').forEach(i => { i.disabled = true; });
+  document.querySelectorAll('.sign-controls button').forEach(b => { b.disabled = true; });
+  padsLocked = true;
+  const now = new Date();
+  const stamp = now.toLocaleDateString('it-IT') + ' alle ' +
+    now.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('confirmWrap').innerHTML =
+    '<div class="confirmed-banner">✓ Contratto confermato il ' + stamp + '</div>';
+}
+
+</script>
+</body>
+</html>
